@@ -19,6 +19,16 @@ client = NotionClient(token_v2="YOUR NOTION API KEY")
 
 # Replace this URL with the URL of the page you want to edit
 page = client.get_block("YOUR NOTION PAGE URL")
+last = client.get_block(page.children[-1].id)
 
-newchild = page.children.add_new(TextBlock, title=date + ' - ' + time + ' | ' + query)
-newchild.checked = True
+# The today page exist we add the entry to that page
+if last.title == date:
+    current = last.children.add_new(TextBlock, title=time + ' | ' + query)
+    current.checked = True
+
+# The today page doesn't exist we create it and add the entry
+else:
+    newPage = page.children.add_new(PageBlock, title=date)
+    newPage.checked = True
+    newCurrent = newPage.children.add_new(TextBlock, title=time + ' | ' + query)
+    newCurrent.checked = True
